@@ -1,48 +1,68 @@
-#include <iostream>
-#include <list>
-#include <vector>
-using namespace std;
-
+// =============================================================================
+//! \file
+//! \brief
+//! \author
+//! \date
+//! \note
+// =============================================================================
 #ifndef GAME_H_
 #define GAME_H_
 
+#include <list>
+#include <vector>
+#include <iostream>
+
+// =============================================================================
+//! \brief The Game class implements...
+// =============================================================================
 class Game{
+// =============================================================================
+// Section for Ctor / Dtor
+// =============================================================================
+    public: Game();
 
-		private:
-			vector<string> players;
+// =============================================================================
+// Section for Implement / Overridden
+// =============================================================================
 
-			int places[6];
-			int purses[6];
+// =============================================================================
+// Section for Other methods
+// =============================================================================
+    public: std::string createRockQuestion(int index);
+    public: bool isPlayable();
+    public: bool add(std::string playerName);
+    public: int howManyPlayers();
+    public: void roll(int roll);
+    public: bool wasCorrectlyAnswered();
+    public: bool wrongAnswer();
 
-			bool inPenaltyBox[6];
+    private: void askQuestion();
+    private: std::string currentCategory();
+    private: bool didPlayerWin();
 
-			list<string> popQuestions;
-			list<string> scienceQuestions;
-			list<string> sportsQuestions;
-			list<string> rockQuestions;
+// =============================================================================
+// Section for Member declaration
+// =============================================================================
+    private: int places[6];
+    private: int purses[6];
+    private: bool inPenaltyBox[6];
+    private: std::vector<std::string> players;
 
-			int currentPlayer;
-			bool isGettingOutOfPenaltyBox;
+    private: std::list<std::string> popQuestions;
+    private: std::list<std::string> scienceQuestions;
+    private: std::list<std::string> sportsQuestions;
+    private: std::list<std::string> rockQuestions;
 
-public:
-	Game();
-	string createRockQuestion(int index);
-	bool isPlayable();
-	bool add(string playerName);
+    private: int currentPlayer;
+    private: bool isGettingOutOfPenaltyBox;
 
-	int howManyPlayers();
-	void roll(int roll);
-
-	private:
-		void askQuestion();
-		string currentCategory();
-
-				public:
-					bool wasCorrectlyAnswered();
-					bool wrongAnswer();
-
-private:
-	bool didPlayerWin();
 };
+// =============================================================================
+// Inline method implementation
+// =============================================================================
 
-#endif /* GAME_H_ */
+#endif // GAME_H_
+// =============================================================================
+//! \file
+//! \copyright
+// ============================== end of file: Game.hpp ========================

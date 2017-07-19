@@ -9,32 +9,26 @@
 
 #include <stdlib.h>
 
-static bool notAWinner;
+int main() {
+    Game game;
+    game.Add("Chet");
+    game.Add("Pat");
+    game.Add("Sue");
 
-int main()
-{
-    Game aGame;
-
-    aGame.add("Chet");
-    aGame.add("Pat");
-    aGame.add("Sue");
-
-    do
-    {
-
-	aGame.roll(rand() % 5 + 1);
-
-	if (rand() % 9 == 7)
-	{
-	    notAWinner = aGame.wrongAnswer();
+    bool notAWinner = true;
+    while(notAWinner) {
+	game.Roll(rand() % 5 + 1);
+	if (rand() % 9 == 7) {
+	    notAWinner = game.WrongAnswer();
 	}
-	else
-	{
-	    notAWinner = aGame.wasCorrectlyAnswered();
+	else {
+	    notAWinner = game.WasCorrectlyAnswered();
 	}
-    } while (notAWinner);
+    }
 
+    return 0;
 }
+
 // =============================================================================
 //! \file
 //! \copyright

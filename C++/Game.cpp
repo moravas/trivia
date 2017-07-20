@@ -6,6 +6,7 @@
 //! \note
 // =============================================================================
 #include "Game.h"
+#include "Player.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,74 +26,74 @@ namespace {
 
 	return questions;
     }
+
+    string MapRankToCategory(uint32_t rank) {
+	switch (rank % 4) {
+	    case 0: {
+		return "Pop";
+	    }
+	    case 1: {
+		return "Science";
+	    }
+	    case 2: {
+		return "Sports";
+	    }
+	    case 3: {
+		return "Rock";
+	    }
+	}
+
+	return string();
+    }
 }
 
 Game::Game()
-    : _places({})
-    , _purses({})
-    , _popQuestions(GenerateQuestion("Pop Question ", 50))
+    : _popQuestions(GenerateQuestion("Pop Question ", 50))
     , _scienceQuestions(GenerateQuestion("Science Question ", 50))
     , _sportsQuestions(GenerateQuestion("Sports Question ", 50))
     , _rockQuestions(GenerateQuestion("Rock Question ", 50))
-    , _currentPlayer(0)
     , _isGettingOutOfPenaltyBox(false)
 {}
 
-bool Game::IsPlayable() {
-    return (GetPlayersCount() >= 2);
-}
+Game::~Game()
+{}
 
-bool Game::Add(const string& playerName) {
-    _players.push_back(playerName);
-    _places[GetPlayersCount()] = 0;
-    _purses[GetPlayersCount()] = 0;
-    _inPenaltyBox[GetPlayersCount()] = false;
-
+void Game::Add(const string& playerName) {
+    _players.emplace_back(make_unique<Player>(playerName));
     cout << playerName << " was added" << endl;
     cout << "They are player number " << _players.size() << endl;
-    return true;
-}
-
-int Game::GetPlayersCount() {
-    return _players.size();
 }
 
 void Game::Roll(int roll) {
-    cout << _players[_currentPlayer] << " is the current player" << endl;
+    auto& player = *(_players.front());
+    cout << player << " is the current player" << endl;
     cout << "They have rolled a " << roll << endl;
 
-    if (_inPenaltyBox[_currentPlayer]) {
+    if (player.IsPunished()) {
 	if (roll % 2 != 0) {
 	    _isGettingOutOfPenaltyBox = true;
-	    cout << _players[_currentPlayer] << " is getting out of the penalty box" << endl;
-	    _places[_currentPlayer] = _places[_currentPlayer] + roll;
-	    if (_places[_currentPlayer] > 11) {
-		_places[_currentPlayer] = _places[_currentPlayer] - 12;
-	    }
+	    cout << player << " is getting out of the penalty box" << endl;
+	    player.AddRank(roll);
 
-	    cout << _players[_currentPlayer] << "'s new location is " << _places[_currentPlayer] << endl;
-	    cout << "The category is " << CurrentCategory() << endl;
+	    cout << player << "'s new location is " << player.Rank() << endl;
+	    cout << "The category is " << MapRankToCategory(_players.front()->Rank()) << endl;
 	    AskQuestion();
 	}
 	else {
-	    cout << _players[_currentPlayer] << " is not getting out of the penalty box" << endl;
+	    cout << player << " is not getting out of the penalty box" << endl;
 	    _isGettingOutOfPenaltyBox = false;
 	}
     }
     else {
-	_places[_currentPlayer] = _places[_currentPlayer] + roll;
-	if (_places[_currentPlayer] > 11) {
-	    _places[_currentPlayer] = _places[_currentPlayer] - 12;
-	}
-
-	cout << _players[_currentPlayer] << "'s new location is " << _places[_currentPlayer] << endl;
-	cout << "The category is " << CurrentCategory() << endl;
+	player.AddRank(roll);
+	cout << player << "'s new location is " << player.Rank() << endl;
+	cout << "The category is " << MapRankToCategory(_players.front()->Rank()) << endl;
 	AskQuestion();
     }
 }
 
 void Game::AskQuestion() {
-    const string category(CurrentCategory());
+    const string category(MapRankToCategory(_players.front()->Rank()));
     if (category == "Pop") {
 	cout << _popQuestions.front() << endl;
 	_popQuestions.pop_front();
@@ -112,73 +113,48 @@ void Game::AskQuestion() {
 }
 
 
-string Game::CurrentCategory() {
-    if (_places[_currentPlayer] == 0) return "Pop";
-    if (_places[_currentPlayer] == 4) return "Pop";
-    if (_places[_currentPlayer] == 8) return "Pop";
-    if (_places[_currentPlayer] == 1) return "Science";
-    if (_places[_currentPlayer] == 5) return "Science";
-    if (_places[_currentPlayer] == 9) return "Science";
-    if (_places[_currentPlayer] == 2) return "Sports";
-    if (_places[_currentPlayer] == 6) return "Sports";
-    if (_places[_currentPlayer] == 10) return "Sports";
-    return "Rock";
-}
-
 bool Game::WasCorrectlyAnswered() {
-    if (_inPenaltyBox[_currentPlayer]) {
+    auto& player = *(_players.front());
+    if (player.IsPunished()) {
 	if (_isGettingOutOfPenaltyBox) {
 	    cout << "Answer was correct!!!!" << endl;
-	    _purses[_currentPlayer]++;
-	    cout << _players[_currentPlayer] << " now has " << _purses[_currentPlayer] <<  " Gold Coins." << endl;
-
-	    _currentPlayer++;
-	    if (_currentPlayer == _players.size()) {
-		_currentPlayer = 0;
-	    }
-
+	    player.IncreaseCoins();
+	    cout << player << " now has " << player.Coins() <<  " Gold Coins." << endl;
+	    ShiftPlayers();
 	    return DidPlayerWin();
 	}
 	else {
-	    _currentPlayer++;
-	    if (_currentPlayer == _players.size()) {
-		_currentPlayer = 0;
-	    }
-
+	    ShiftPlayers();
 	    return true;
 	}
     }
     else {
 	cout << "Answer was corrent!!!!" << endl;
-	_purses[_currentPlayer]++;
-	cout << _players[_currentPlayer] << " now has " << _purses[_currentPlayer] << " Gold Coins." << endl;
-
-	_currentPlayer++;
-	if (_currentPlayer == _players.size()) {
-	    _currentPlayer = 0;
-	}
-
+	ShiftPlayers();
+	cout << player << " now has " << player.Coins() << " Gold Coins." << endl;
+	ShiftPlayers();
 	return DidPlayerWin();
     }
 }
 
 bool Game::WrongAnswer() {
+    auto& player = *(_players.front());
     cout << "Question was incorrectly answered" << endl;
-    cout << _players[_currentPlayer] + " was sent to the penalty box" << endl;
-    _inPenaltyBox[_currentPlayer] = true;
-
-    _currentPlayer++;
-    if (_currentPlayer == _players.size()) {
-	_currentPlayer = 0;
-    }
-
+    cout << player << " was sent to the penalty box" << endl;
+    player.Punish();
+    ShiftPlayers();
     return true;
 }
 
 
 bool Game::DidPlayerWin()
 {
-    return !(_purses[_currentPlayer] == 6);
+    return !(_players.front()->Coins() == 6);
+}
+
+void Game::ShiftPlayers() {
+    _players.emplace_back(move(_players.front()));
+    _players.pop_front();
 }
 
 

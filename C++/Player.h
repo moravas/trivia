@@ -5,25 +5,20 @@
 //! \date
 //! \note
 // =============================================================================
-#ifndef GAME_H_
-#define GAME_H_
+#ifndef PLAYER_H_
+#define PLAYER_H_
 
-#include <list>
-#include <vector>
-#include <iostream>
-#include <memory>
+#include <string>
+#include <ostream>
 
 // =============================================================================
-//! \brief The Game class implements...
+//! \brief The Player class implements ...
 // =============================================================================
-class Player;
-
-class Game {
+class Player {
 // =============================================================================
 // Section for Ctor / Dtor
 // =============================================================================
-    public: Game();
-    public: ~Game();
+    public: Player(const std::string& name);
 
 // =============================================================================
 // Section for Implement / Overridden
@@ -32,36 +27,62 @@ class Game {
 // =============================================================================
 // Section for Other methods
 // =============================================================================
-    public: void Add(const std::string& playerName);
-    public: void Roll(int roll);
-    public: bool WasCorrectlyAnswered();
-    public: bool WrongAnswer();
+    public: void AddRank(uint32_t rank);
+    public: inline uint32_t Rank() const;
+    public: void IncreaseCoins();
+    public: inline uint32_t Coins() const;
 
-    private: void AskQuestion();
-    private: bool DidPlayerWin();
-    private: void ShiftPlayers();
+    public: inline void Punish();
+    public: inline void Rehabilitate();
+
+    public: inline bool IsPunished() const;
+
+    public: inline void PrintToStream(std::ostream& out) const;
 
 // =============================================================================
 // Section for Member declaration
 // =============================================================================
-	// use enum for question type
+    public: static constexpr uint32_t MaxRank = 12;
 
-    private: std::list<std::unique_ptr<Player>> _players;
-
-    private: std::list<std::string> _popQuestions;
-    private: std::list<std::string> _scienceQuestions;
-    private: std::list<std::string> _sportsQuestions;
-    private: std::list<std::string> _rockQuestions;
-
-    private: bool _isGettingOutOfPenaltyBox;
-
+    private: bool _punished;
+    private: uint32_t _rank;
+    private: uint32_t _coins;
+    private: const std::string _name;
 };
 // =============================================================================
 // Inline method implementation
 // =============================================================================
+inline uint32_t Player::Rank() const {
+    return _rank;
+}
 
-#endif // GAME_H_
+inline uint32_t Player::Coins() const {
+    return _coins;
+}
+
+inline void Player::Punish() {
+    _punished = true;
+}
+
+inline void Player::Rehabilitate() {
+    _punished = false;
+}
+
+inline bool Player::IsPunished() const {
+    return _punished;
+}
+
+inline void Player::PrintToStream(std::ostream& out) const {
+    out << _name;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const Player& player) {
+    player.PrintToStream(out);
+    return out;
+}
+
+#endif // PLAYER_H_
 // =============================================================================
 //! \file
 //! \copyright
-// ============================== end of file: Game.hpp ========================
+// ============================ end of file: Player.hpp ========================

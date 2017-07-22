@@ -6,11 +6,17 @@
 //! \note
 // =============================================================================
 #include "Game.h"
-
-#include <stdlib.h>
+#include "QuestionContainer.h"
+#include "QuestionType.h"
 
 int main() {
-    Game game;
+    QuestionContainer question;
+    question.Add(QuestionType::Pop, 50);
+    question.Add(QuestionType::Science, 50);
+    question.Add(QuestionType::Sports, 50);
+    question.Add(QuestionType::Rock, 50);
+
+    Game game(question);
     game.Add("Chet");
     game.Add("Pat");
     game.Add("Sue");

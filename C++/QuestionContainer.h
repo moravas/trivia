@@ -5,53 +5,43 @@
 //! \date
 //! \note
 // =============================================================================
-#ifndef GAME_H_
-#define GAME_H_
+#ifndef QUESTION_H_
+#define QUESTION_H_
 #include "IQuestionContainer.h"
 
+#include <map>
 #include <list>
-#include <memory>
-
-class Player;
-enum class QuestionType;
+#include <string>
 
 // =============================================================================
-//! \brief The Game class implements...
+//! \brief The Question class implements...
 // =============================================================================
-class Game {
+class QuestionContainer: public IQuestionContainer {
 // =============================================================================
 // Section for Ctor / Dtor
 // =============================================================================
-    public: Game(IQuestionContainer& generator);
-    public: ~Game();
 
 // =============================================================================
 // Section for Implement / Overridden
 // =============================================================================
+    public: void Ask(QuestionType type) override;
+    public: void Add(QuestionType type, unsigned int count) override;
 
 // =============================================================================
 // Section for Other methods
 // =============================================================================
-    public: void Add(const std::string& playerName);
-    public: void Roll(int roll);
-    public: bool WasCorrectlyAnswered();
-    public: bool WrongAnswer();
-
-    private: bool DidPlayerWin();
-    private: void ShiftPlayers();
 
 // =============================================================================
 // Section for Member declaration
 // =============================================================================
-    private: IQuestionContainer& _question;
-    private: std::list<std::unique_ptr<Player>> _players;
+    private: std::map<QuestionType, std::list<std::string>> _questions;
 };
 // =============================================================================
 // Inline method implementation
 // =============================================================================
 
-#endif // GAME_H_
+#endif // QUESTION_H_
 // =============================================================================
 //! \file
 //! \copyright
-// ============================== end of file: Game.hpp ========================
+// =========================== end of file: Question.hpp =======================

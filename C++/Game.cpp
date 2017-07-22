@@ -7,6 +7,7 @@
 // =============================================================================
 #include "Game.h"
 #include "Player.h"
+#include "QuestionType.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,44 +16,8 @@
 
 using namespace std;
 
-namespace {
-    // TODO: use DI by outer class
-    list<string> GenerateQuestion(const string& prefix, uint32_t count) {
-	uint32_t index = 0;
-	list<string> questions(count, prefix);
-	for(auto& item: questions) {
-	    item.append(to_string(index++));
-	}
-
-	return questions;
-    }
-
-    string MapRankToCategory(uint32_t rank) {
-	switch (rank % 4) {
-	    case 0: {
-		return "Pop";
-	    }
-	    case 1: {
-		return "Science";
-	    }
-	    case 2: {
-		return "Sports";
-	    }
-	    case 3: {
-		return "Rock";
-	    }
-	}
-
-	return string();
-    }
-}
-
-Game::Game()
-    : _popQuestions(GenerateQuestion("Pop Question ", 50))
-    , _scienceQuestions(GenerateQuestion("Science Question ", 50))
-    , _sportsQuestions(GenerateQuestion("Sports Question ", 50))
-    , _rockQuestions(GenerateQuestion("Rock Question ", 50))
-    , _isGettingOutOfPenaltyBox(false)
+Game::Game(IQuestionContainer& generator)
+    : _question(generator)
 {}
 
 Game::~Game()
@@ -71,47 +36,16 @@ void Game::Roll(int roll) {
 
     if (player.IsPunished()) {
 	if (roll % 2 != 0) {
-	    _isGettingOutOfPenaltyBox = true;
-	    cout << player << " is getting out of the penalty box" << endl;
+	    player.Rehabilitate();
 	    player.AddRank(roll);
-
-	    cout << player << "'s new location is " << player.Rank() << endl;
-	    cout << "The category is " << MapRankToCategory(_players.front()->Rank()) << endl;
-	    AskQuestion();
-	}
-	else {
-	    cout << player << " is not getting out of the penalty box" << endl;
-	    _isGettingOutOfPenaltyBox = false;
+	    player.Ask(_question);
 	}
     }
     else {
 	player.AddRank(roll);
-	cout << player << "'s new location is " << player.Rank() << endl;
-	cout << "The category is " << MapRankToCategory(_players.front()->Rank()) << endl;
-	AskQuestion();
+	player.Ask(_question);
     }
 }
-
-void Game::AskQuestion() {
-    const string category(MapRankToCategory(_players.front()->Rank()));
-    if (category == "Pop") {
-	cout << _popQuestions.front() << endl;
-	_popQuestions.pop_front();
-    }
-    else if (category == "Science") {
-	cout << _scienceQuestions.front() << endl;
-	_scienceQuestions.pop_front();
-    }
-    else if (category == "Sports") {
-	cout << _sportsQuestions.front() << endl;
-	_sportsQuestions.pop_front();
-    }
-    else if (category == "Rock") {
-	cout << _rockQuestions.front() << endl;
-	_rockQuestions.pop_front();
-    }
-}
-
 
 bool Game::WasCorrectlyAnswered() {
     auto& player = *(_players.front());
@@ -156,7 +90,6 @@ void Game::ShiftPlayers() {
     _players.emplace_back(move(_players.front()));
     _players.pop_front();
 }
-
 
 // =============================================================================
 //! \file

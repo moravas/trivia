@@ -7,9 +7,12 @@
 // =============================================================================
 #ifndef PLAYER_H_
 #define PLAYER_H_
+#include "IQuestionContainer.h"
 
 #include <string>
 #include <ostream>
+
+enum class QuestionType;
 
 // =============================================================================
 //! \brief The Player class implements ...
@@ -27,17 +30,20 @@ class Player {
 // =============================================================================
 // Section for Other methods
 // =============================================================================
+    public: void Ask(IQuestionContainer& questionContainer) const;
     public: void AddRank(uint32_t rank);
-    public: inline uint32_t Rank() const;
     public: void IncreaseCoins();
+    public: void Rehabilitate();
+
     public: inline uint32_t Coins() const;
 
     public: inline void Punish();
-    public: inline void Rehabilitate();
 
     public: inline bool IsPunished() const;
 
     public: inline void PrintToStream(std::ostream& out) const;
+
+    private: QuestionType Rank() const;
 
 // =============================================================================
 // Section for Member declaration
@@ -52,20 +58,12 @@ class Player {
 // =============================================================================
 // Inline method implementation
 // =============================================================================
-inline uint32_t Player::Rank() const {
-    return _rank;
-}
-
 inline uint32_t Player::Coins() const {
     return _coins;
 }
 
 inline void Player::Punish() {
     _punished = true;
-}
-
-inline void Player::Rehabilitate() {
-    _punished = false;
 }
 
 inline bool Player::IsPunished() const {

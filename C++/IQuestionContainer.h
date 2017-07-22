@@ -5,53 +5,39 @@
 //! \date
 //! \note
 // =============================================================================
-#ifndef GAME_H_
-#define GAME_H_
-#include "IQuestionContainer.h"
+#ifndef IQUESTION_CONTAINER_H_
+#define IQUESTION_CONTAINER_H_
 
-#include <list>
-#include <memory>
-
-class Player;
 enum class QuestionType;
 
 // =============================================================================
-//! \brief The Game class implements...
+//! \brief The IQuestionContainer interface implementation ...
 // =============================================================================
-class Game {
+class IQuestionContainer {
 // =============================================================================
 // Section for Ctor / Dtor
 // =============================================================================
-    public: Game(IQuestionContainer& generator);
-    public: ~Game();
 
 // =============================================================================
 // Section for Implement / Overridden
 // =============================================================================
+    public: virtual void Ask(QuestionType type) = 0;
+    public: virtual void Add(QuestionType type, unsigned int count) = 0;
 
 // =============================================================================
 // Section for Other methods
 // =============================================================================
-    public: void Add(const std::string& playerName);
-    public: void Roll(int roll);
-    public: bool WasCorrectlyAnswered();
-    public: bool WrongAnswer();
-
-    private: bool DidPlayerWin();
-    private: void ShiftPlayers();
 
 // =============================================================================
 // Section for Member declaration
 // =============================================================================
-    private: IQuestionContainer& _question;
-    private: std::list<std::unique_ptr<Player>> _players;
 };
 // =============================================================================
 // Inline method implementation
 // =============================================================================
 
-#endif // GAME_H_
+#endif // IQUESTION_CONTAINER_H_
 // =============================================================================
 //! \file
 //! \copyright
-// ============================== end of file: Game.hpp ========================
+// ==================== end of file: IQuestionContainer.hpp ====================

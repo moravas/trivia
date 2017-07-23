@@ -9,8 +9,6 @@
 #include "Player.h"
 #include "QuestionType.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 
@@ -31,12 +29,12 @@ void Game::Add(const string& playerName) {
 
 void Game::Roll(int roll) {
     auto& player = *(_players.front());
-    cout << player << " is the current player" << endl;
+    cout << player.Name() << " is the current player" << endl;
     cout << "They have rolled a " << roll << endl;
 
     if (player.IsPunished()) {
 	if (roll % 2 != 0) {
-	    player.Rehabilitate();
+	    player.StartRehabilitate();
 	    player.AddRank(roll);
 	    player.Ask(_question);
 	}
@@ -50,12 +48,12 @@ void Game::Roll(int roll) {
 bool Game::WasCorrectlyAnswered() {
     auto& player = *(_players.front());
     if (player.IsPunished()) {
-	if (_isGettingOutOfPenaltyBox) {
+	player.Rehabilitate();
+	if (!player.IsPunished()) {
 	    cout << "Answer was correct!!!!" << endl;
 	    player.IncreaseCoins();
-	    cout << player << " now has " << player.Coins() <<  " Gold Coins." << endl;
 	    ShiftPlayers();
-	    return DidPlayerWin();
+	    return _players.front()->IsWin();
 	}
 	else {
 	    ShiftPlayers();
@@ -65,26 +63,19 @@ bool Game::WasCorrectlyAnswered() {
     else {
 	cout << "Answer was corrent!!!!" << endl;
 	ShiftPlayers();
-	cout << player << " now has " << player.Coins() << " Gold Coins." << endl;
 	ShiftPlayers();
-	return DidPlayerWin();
+	return _players.front()->IsWin();
     }
 }
 
 bool Game::WrongAnswer() {
     auto& player = *(_players.front());
     cout << "Question was incorrectly answered" << endl;
-    cout << player << " was sent to the penalty box" << endl;
     player.Punish();
     ShiftPlayers();
     return true;
 }
 
-
-bool Game::DidPlayerWin()
-{
-    return !(_players.front()->Coins() == 6);
-}
 
 void Game::ShiftPlayers() {
     _players.emplace_back(move(_players.front()));

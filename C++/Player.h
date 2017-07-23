@@ -18,6 +18,12 @@ enum class QuestionType;
 //! \brief The Player class implements ...
 // =============================================================================
 class Player {
+    private: enum class PunishmentState {
+	    Free,
+	    Punished,
+	    Rehabilitation
+	};
+
 // =============================================================================
 // Section for Ctor / Dtor
 // =============================================================================
@@ -34,14 +40,12 @@ class Player {
     public: void AddRank(uint32_t rank);
     public: void IncreaseCoins();
     public: void Rehabilitate();
+    public: void Punish();
 
-    public: inline uint32_t Coins() const;
-
-    public: inline void Punish();
-
+    public: inline bool IsWin() const;
+    public: inline void StartRehabilitate();
     public: inline bool IsPunished() const;
-
-    public: inline void PrintToStream(std::ostream& out) const;
+    public: inline const std::string& Name() const;
 
     private: QuestionType Rank() const;
 
@@ -49,8 +53,9 @@ class Player {
 // Section for Member declaration
 // =============================================================================
     public: static constexpr uint32_t MaxRank = 12;
+    public: static constexpr uint32_t WinnerCoins = 6;
 
-    private: bool _punished;
+    private: PunishmentState _punished;
     private: uint32_t _rank;
     private: uint32_t _coins;
     private: const std::string _name;
@@ -58,25 +63,20 @@ class Player {
 // =============================================================================
 // Inline method implementation
 // =============================================================================
-inline uint32_t Player::Coins() const {
-    return _coins;
+inline bool Player::IsWin() const {
+    return _coins == WinnerCoins;
 }
 
-inline void Player::Punish() {
-    _punished = true;
+inline void Player::StartRehabilitate() {
+    _punished = PunishmentState::Rehabilitation;
 }
 
 inline bool Player::IsPunished() const {
-    return _punished;
+    return _punished != PunishmentState::Free;;
 }
 
-inline void Player::PrintToStream(std::ostream& out) const {
-    out << _name;
-}
-
-inline std::ostream& operator<< (std::ostream& out, const Player& player) {
-    player.PrintToStream(out);
-    return out;
+inline const std::string& Player::Name() const {
+    return _name;
 }
 
 #endif // PLAYER_H_

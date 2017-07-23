@@ -14,7 +14,7 @@
 using namespace std;
 
 Player::Player(const string& name)
-    : _punished(false)
+    : _punished(PunishmentState::Free)
     , _rank(0)
     , _coins(0)
     , _name(name)
@@ -52,12 +52,20 @@ QuestionType Player::Rank() const {
 void Player::IncreaseCoins() {
     if (_coins < numeric_limits<decltype(_coins)>::max()) {
 	_coins++;
+	cout << _name << " now has " << _coins << " Gold Coins." << endl;
     }
 }
 
+void Player::Punish() {
+    _punished = PunishmentState::Punished;
+    cout << _name << " was sent to the penalty box" << endl;
+}
+
 void Player::Rehabilitate() {
-    _punished = false;
-    cout << _name << " is getting out of the penalty box" << endl;
+    if (_punished == PunishmentState::Rehabilitation) {
+	_punished = PunishmentState::Free;
+	cout << _name << " is getting out of the penalty box" << endl;
+    }
 }
 
 // =============================================================================

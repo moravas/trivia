@@ -37,7 +37,6 @@ class Game {
     public: bool WasCorrectlyAnswered();
     public: bool WrongAnswer();
 
-    private: bool DidPlayerWin();
     private: void ShiftPlayers();
 
 // =============================================================================

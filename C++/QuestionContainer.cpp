@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void QuestionContainer::Ask(QuestionType type) {
+void QuestionContainer::Take(QuestionType type) {
     auto it = _questions.find(type);
     cout << it->second.front() << endl;
     it->second.pop_front();
@@ -34,4 +34,4 @@ void QuestionContainer::Add(QuestionType type, unsigned int count) {
 // =============================================================================
 //! \file
 //! \copyright
-// =========================== end of file: Question.cpp =======================
+// ==================== end of file: QuestionContainer.cpp =====================

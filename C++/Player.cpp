@@ -21,7 +21,7 @@ Player::Player(const string& name)
 {}
 
 void Player::Ask(IQuestionContainer& questionContainer) const {
-    questionContainer.Ask(Rank());
+    questionContainer.Take(Rank());
 }
 
 void Player::AddRank(uint32_t rank) {

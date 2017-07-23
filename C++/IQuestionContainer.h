@@ -21,7 +21,7 @@ class IQuestionContainer {
 // =============================================================================
 // Section for Implement / Overridden
 // =============================================================================
-    public: virtual void Ask(QuestionType type) = 0;
+    public: virtual void Take(QuestionType type) = 0;
     public: virtual void Add(QuestionType type, unsigned int count) = 0;
 
 // =============================================================================

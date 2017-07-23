@@ -24,7 +24,7 @@ class QuestionContainer: public IQuestionContainer {
 // =============================================================================
 // Section for Implement / Overridden
 // =============================================================================
-    public: void Ask(QuestionType type) override;
+    public: void Take(QuestionType type) override;
     public: void Add(QuestionType type, unsigned int count) override;
 
 // =============================================================================
@@ -44,4 +44,4 @@ class QuestionContainer: public IQuestionContainer {
 // =============================================================================
 //! \file
 //! \copyright
-// =========================== end of file: Question.hpp =======================
+// ==================== end of file: QuestionContainer.hpp =====================

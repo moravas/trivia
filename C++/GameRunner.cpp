@@ -16,21 +16,14 @@ int main() {
     question.Add(QuestionType::Sports, 50);
     question.Add(QuestionType::Rock, 50);
 
-    Game game(question);
+    Game game;
     game.Add("Chet");
     game.Add("Pat");
     game.Add("Sue");
 
-    bool notAWinner = true;
-    while(notAWinner) {
-	game.Roll(rand() % 5 + 1);
-	if (rand() % 9 == 7) {
-	    notAWinner = game.WrongAnswer();
-	}
-	else {
-	    notAWinner = game.WasCorrectlyAnswered();
-	}
-    }
+    do {
+	game.Roll(question);
+    } while(game.CheckAnswer());
 
     return 0;
 }

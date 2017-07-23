@@ -14,8 +14,7 @@
 
 using namespace std;
 
-Game::Game(IQuestionContainer& generator)
-    : _question(generator)
+Game::Game()
 {}
 
 Game::~Game()
@@ -27,33 +26,24 @@ void Game::Add(const string& playerName) {
     cout << "They are player number " << _players.size() << endl;
 }
 
-void Game::Roll(int roll) {
-    auto& player = *(_players.front());
-    cout << player.Name() << " is the current player" << endl;
-    cout << "They have rolled a " << roll << endl;
-
-    if (player.IsPunished()) {
-	if (roll % 2 != 0) {
-	    player.StartRehabilitate();
-	    player.AddRank(roll);
-	    player.Ask(_question);
-	}
-    }
-    else {
-	player.AddRank(roll);
-	player.Ask(_question);
-    }
+void Game::Roll(IQuestionContainer& generator) {
+    ActivePlayer().Roll(generator);
 }
 
-bool Game::WasCorrectlyAnswered() {
-    auto& player = *(_players.front());
-    if (player.IsPunished()) {
-	player.Rehabilitate();
-	if (!player.IsPunished()) {
+bool Game::CheckAnswer() {
+    if (rand() % 9 == 7) {
+	cout << "Question was incorrectly answered" << endl;
+	ActivePlayer().Punish();
+	ShiftPlayers();
+	return true;
+    }
+    else if (ActivePlayer().IsPunished()) {
+	ActivePlayer().Rehabilitate();
+	if (!ActivePlayer().IsPunished()) {
 	    cout << "Answer was correct!!!!" << endl;
-	    player.IncreaseCoins();
+	    ActivePlayer().IncreaseCoins();
 	    ShiftPlayers();
-	    return _players.front()->IsWin();
+	    return ActivePlayer().IsWin();
 	}
 	else {
 	    ShiftPlayers();
@@ -64,18 +54,9 @@ bool Game::WasCorrectlyAnswered() {
 	cout << "Answer was corrent!!!!" << endl;
 	ShiftPlayers();
 	ShiftPlayers();
-	return _players.front()->IsWin();
+	return ActivePlayer().IsWin();
     }
 }
-
-bool Game::WrongAnswer() {
-    auto& player = *(_players.front());
-    cout << "Question was incorrectly answered" << endl;
-    player.Punish();
-    ShiftPlayers();
-    return true;
-}
-
 
 void Game::ShiftPlayers() {
     _players.emplace_back(move(_players.front()));

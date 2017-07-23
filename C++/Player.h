@@ -36,18 +36,18 @@ class Player {
 // =============================================================================
 // Section for Other methods
 // =============================================================================
-    public: void Ask(IQuestionContainer& questionContainer) const;
-    public: void AddRank(uint32_t rank);
+    public: void Roll(IQuestionContainer& questionContainer);
     public: void IncreaseCoins();
     public: void Rehabilitate();
     public: void Punish();
 
     public: inline bool IsWin() const;
-    public: inline void StartRehabilitate();
     public: inline bool IsPunished() const;
-    public: inline const std::string& Name() const;
 
+    private: void AddRank(uint32_t rank);
     private: QuestionType Rank() const;
+
+    private: inline void StartRehabilitate();
 
 // =============================================================================
 // Section for Member declaration
@@ -73,10 +73,6 @@ inline void Player::StartRehabilitate() {
 
 inline bool Player::IsPunished() const {
     return _punished != PunishmentState::Free;;
-}
-
-inline const std::string& Player::Name() const {
-    return _name;
 }
 
 #endif // PLAYER_H_

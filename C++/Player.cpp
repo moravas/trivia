@@ -20,10 +20,6 @@ Player::Player(const string& name)
     , _name(name)
 {}
 
-void Player::Ask(IQuestionContainer& questionContainer) const {
-    questionContainer.Take(Rank());
-}
-
 void Player::AddRank(uint32_t rank) {
     _rank += rank;
     if (_rank >= MaxRank) {
@@ -65,6 +61,23 @@ void Player::Rehabilitate() {
     if (_punished == PunishmentState::Rehabilitation) {
 	_punished = PunishmentState::Free;
 	cout << _name << " is getting out of the penalty box" << endl;
+    }
+}
+
+void Player::Roll(IQuestionContainer& questionContainer) {
+    uint32_t roll = rand() % 5 + 1;
+    cout << _name << " is the current player, who rolled " << roll << endl;
+
+    if (IsPunished()) {
+	if (roll % 2 != 0) {
+	    StartRehabilitate();
+	    AddRank(roll);
+	    questionContainer.Take(Rank());
+	}
+    }
+    else {
+	AddRank(roll);
+	questionContainer.Take(Rank());
     }
 }
 
